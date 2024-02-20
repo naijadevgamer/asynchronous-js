@@ -5,11 +5,40 @@ const countriesContainer = document.querySelector('.countries');
 
 ///////////////////////////////////////
 
+// Old school way
 const request = new XMLHttpRequest();
 
-request.open('GET', 'https://restcountries.eu/rest/v2/name/nigeria');
+request.open('GET', 'https://restcountries.com/v3.1/name/nigeria');
+
 request.send();
+// console.log(request.responseText);
 
 request.addEventListener('load', function () {
-  console.log(this.responseText);
+  const [data] = JSON.parse(this.responseText);
+
+  // converts languages value to array
+  const languages =
+    data.languages !== undefined ? Object.values(data.languages) : '';
+
+  // converts currencies value to array
+  const currencies =
+    data.currencies !== undefined ? Object.values(data.currencies) : '';
+
+  const html = `
+  <article class="country">
+    <img class="country__img" src="${data.flags.svg}" />
+    <div class="country__data">
+      <h3 class="country__name">${data.name.common}</h3>
+      <h4 class="country__region">${data.region}</h4>
+      <p class="country__row"><span>👫</span>${(
+        +data.population / 1000000
+      ).toFixed(1)} people</p>
+      <p class="country__row"><span>🗣️</span>${languages[0]}</p>
+      <p class="country__row"><span>💰</span>${currencies[0].name}</p>
+    </div>
+   </article>
+  `;
+
+  countriesContainer.insertAdjacentHTML('beforeend', html);
+  countriesContainer.style.opacity = 1;
 });
