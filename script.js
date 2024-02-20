@@ -5,26 +5,15 @@ const countriesContainer = document.querySelector('.countries');
 
 ///////////////////////////////////////
 
-// Old school way
-const getCountryData = function (country) {
-  const request = new XMLHttpRequest();
+const renderCountry = function (data) {
+  // converts languages value to array
+  const languages =
+    data.languages !== undefined ? Object.values(data.languages) : '';
 
-  request.open('GET', 'https://restcountries.com/v3.1/name/' + country);
-
-  request.send();
-
-  request.addEventListener('load', function () {
-    const [data] = JSON.parse(this.responseText);
-
-    // converts languages value to array
-    const languages =
-      data.languages !== undefined ? Object.values(data.languages) : '';
-
-    // converts currencies value to array
-    const currencies =
-      data.currencies !== undefined ? Object.values(data.currencies) : '';
-
-    const html = `
+  // converts currencies value to array
+  const currencies =
+    data.currencies !== undefined ? Object.values(data.currencies) : '';
+  const html = `
     <article class="country">
     <img class="country__img" src="${data.flags.svg}" />
     <div class="country__data">
@@ -39,9 +28,41 @@ const getCountryData = function (country) {
       </article>
       `;
 
-    countriesContainer.insertAdjacentHTML('beforeend', html);
-    countriesContainer.style.opacity = 1;
+  countriesContainer.insertAdjacentHTML('beforeend', html);
+  countriesContainer.style.opacity = 1;
+};
+
+// Old school way
+const getCountryAndNeighbour = function (country) {
+  const request = new XMLHttpRequest();
+
+  request.open('GET', 'https://restcountries.com/v3.1/name/' + country);
+
+  request.send();
+
+  request.addEventListener('load', function () {
+    const [data] = JSON.parse(this.responseText);
+    renderCountry(data);
+
+    // Get neigbour country
+    const [neigbour] = data.borders;
+
+    if (!neigbour) return;
+
+    //AJAX call country 2
+    const request2 = new XMLHttpRequest();
+
+    request.open(
+      'GET',
+      'https://restcountries.com/v3.1/alpha/{code}' + neigbour
+    );
+
+    request.send();
+    request.addEventListener('load', function () {
+      const [data] = JSON.parse(this.responseText);
+      renderCountry(data);
+    });
   });
 };
 
-getCountryData('nigeria');
+getCountryAndNeighbour('nigeria');
