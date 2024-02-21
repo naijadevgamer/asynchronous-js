@@ -5,7 +5,7 @@ const countriesContainer = document.querySelector('.countries');
 
 ///////////////////////////////////////
 
-const renderCountry = function (data) {
+const renderCountry = function (data, className = '') {
   // converts languages value to array
   const languages =
     data.languages !== undefined ? Object.values(data.languages) : '';
@@ -14,7 +14,7 @@ const renderCountry = function (data) {
   const currencies =
     data.currencies !== undefined ? Object.values(data.currencies) : '';
   const html = `
-    <article class="country">
+    <article class="country ${className}">
     <img class="country__img" src="${data.flags.svg}" />
     <div class="country__data">
     <h3 class="country__name">${data.name.common}</h3>
@@ -45,19 +45,19 @@ const getCountryAndNeighbour = function (country) {
     renderCountry(data);
 
     // Get neigbour country
-    const [neigbour] = data.borders;
+    const [neighbour] = data.borders;
 
-    if (!neigbour) return;
+    if (!neighbour) return;
 
     //AJAX call country 2
     const request2 = new XMLHttpRequest();
 
-    request2.open('GET', 'https://restcountries.com/v3.1/alpha/' + neigbour);
+    request2.open('GET', 'https://restcountries.com/v3.1/alpha/' + neighbour);
 
     request2.send();
     request2.addEventListener('load', function () {
       const [data] = JSON.parse(this.responseText);
-      renderCountry(data);
+      renderCountry(data, 'neighbour');
     });
   });
 };
