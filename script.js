@@ -33,7 +33,7 @@ const renderCountry = function (data, className = '') {
 };
 
 // Old school way
-const getCountryAndNeighbour = function (country) {
+const getCountryAndNeighbourOld = function (country) {
   // AJAX call country 1
   const request = new XMLHttpRequest();
   request.open('GET', 'https://restcountries.com/v3.1/name/' + country);
@@ -50,6 +50,7 @@ const getCountryAndNeighbour = function (country) {
     if (!neighbour) return;
 
     // AJAX call country 2
+    // Callback hell
     const request2 = new XMLHttpRequest();
     request2.open('GET', 'https://restcountries.com/v3.1/alpha/' + neighbour);
     request2.send();
@@ -60,25 +61,23 @@ const getCountryAndNeighbour = function (country) {
   });
 };
 
-getCountryAndNeighbour('usa');
+getCountryAndNeighbourOld('usa');
 
 // New way
-// const getCountryData = function (country) {
-//   fetch('https://restcountries.com/v3.1/name/' + country)
-//     .then(function (response) {
-//       return response.json();
-//     })
-//     .then(function (result) {
-//       const [data] = result;
-//       console.log(data);
-//       renderCountry(data);
-//     });
-// };
-
-const getCountryData = function (country) {
+const getCountryAndNeighbourNew = function (country) {
+  // Country 1
   fetch('https://restcountries.com/v3.1/name/' + country)
     .then(response => response.json())
-    .then(([data]) => renderCountry(data));
+    .then(([data]) => {
+      renderCountry(data);
+      const [neighbour] = data.borders;
+      console.log(data.borders);
+      if (!neighbour) return;
+      // Country 2
+      return fetch('https://restcountries.com/v3.1/alpha/' + neighbour);
+    })
+    .then(response => response.json())
+    .then(([data]) => renderCountry(data, 'neighbour'));
 };
 
-getCountryData('portugal');
+getCountryAndNeighbourNew('germany');
