@@ -34,26 +34,24 @@ const renderCountry = function (data, className = '') {
 
 // Old school way
 const getCountryAndNeighbour = function (country) {
+  // AJAX call country 1
   const request = new XMLHttpRequest();
-
   request.open('GET', 'https://restcountries.com/v3.1/name/' + country);
-
+  console.log(request);
   request.send();
-
+  console.log(request.responseText);
   request.addEventListener('load', function () {
     const [data] = JSON.parse(this.responseText);
     renderCountry(data);
 
-    // Get neigbour country
+    // Get neighbour country border
     const [neighbour] = data.borders;
 
     if (!neighbour) return;
 
-    //AJAX call country 2
+    // AJAX call country 2
     const request2 = new XMLHttpRequest();
-
     request2.open('GET', 'https://restcountries.com/v3.1/alpha/' + neighbour);
-
     request2.send();
     request2.addEventListener('load', function () {
       const [data] = JSON.parse(this.responseText);
@@ -62,4 +60,20 @@ const getCountryAndNeighbour = function (country) {
   });
 };
 
-getCountryAndNeighbour('nigeria');
+getCountryAndNeighbour('usa');
+// getCountryAndNeighbour('nigeria');
+
+// New way
+const getCountryData = function (country) {
+  fetch('https://restcountries.com/v3.1/name/' + country)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (result) {
+      const [data] = result;
+      console.log(data);
+      renderCountry(data);
+    });
+};
+
+getCountryData('portugal');
