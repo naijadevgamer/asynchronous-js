@@ -52,13 +52,10 @@ const getCountryAndNeighbour = function (country) {
     //AJAX call country 2
     const request2 = new XMLHttpRequest();
 
-    request.open(
-      'GET',
-      'https://restcountries.com/v3.1/alpha/{code}' + neigbour
-    );
+    request2.open('GET', 'https://restcountries.com/v3.1/alpha/' + neigbour);
 
-    request.send();
-    request.addEventListener('load', function () {
+    request2.send();
+    request2.addEventListener('load', function () {
       const [data] = JSON.parse(this.responseText);
       renderCountry(data);
     });
