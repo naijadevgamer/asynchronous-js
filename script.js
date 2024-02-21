@@ -61,19 +61,24 @@ const getCountryAndNeighbour = function (country) {
 };
 
 getCountryAndNeighbour('usa');
-// getCountryAndNeighbour('nigeria');
 
 // New way
+// const getCountryData = function (country) {
+//   fetch('https://restcountries.com/v3.1/name/' + country)
+//     .then(function (response) {
+//       return response.json();
+//     })
+//     .then(function (result) {
+//       const [data] = result;
+//       console.log(data);
+//       renderCountry(data);
+//     });
+// };
+
 const getCountryData = function (country) {
   fetch('https://restcountries.com/v3.1/name/' + country)
-    .then(function (response) {
-      return response.json();
-    })
-    .then(function (result) {
-      const [data] = result;
-      console.log(data);
-      renderCountry(data);
-    });
+    .then(response => response.json())
+    .then(([data]) => renderCountry(data));
 };
 
 getCountryData('portugal');
