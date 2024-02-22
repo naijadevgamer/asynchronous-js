@@ -72,15 +72,21 @@ const getCountryAndNeighbourOld = function (country) {
 const getCountryAndNeighbourNew = function (country) {
   // Country 1
   fetch('https://restcountries.com/v3.1/name/' + country)
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) throw new Error('Country not found');
+      return response.json();
+    })
     .then(([data]) => {
       renderCountry(data);
+      if (!data.borders) throw new Error('Country is borderless');
       const [neighbour] = data.borders;
-      if (!neighbour) return;
       // Country 2
       return fetch('https://restcountries.com/v3.1/alpha/' + neighbour);
     })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) throw new Error('Country not found');
+      return response.json();
+    })
     .then(([data]) => renderCountry(data, 'neighbour'))
     .catch(err => {
       console.error(`${err} 📛📛📛`);
@@ -92,5 +98,5 @@ const getCountryAndNeighbourNew = function (country) {
 };
 
 btn.addEventListener('click', function () {
-  getCountryAndNeighbourNew('nigeria');
+  getCountryAndNeighbourNew('madagascar');
 });
