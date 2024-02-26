@@ -99,43 +99,37 @@ const getCountryAndNeighbourNew = function (country) {
     });
 };
 
-btn.addEventListener('click', function () {
-  getCountryAndNeighbourNew('madagascar');
-});
+// btn.addEventListener('click', function () {
+//   getCountryAndNeighbourNew('madagascar');
+// });
 
-// 1
-const whereAmI = function (lat, lng) {
-  // 2
-
-  fetch(`https://geocode.xyz/${lat},${lng}?json=1`)
-    .then(res => res.json())
-    .then(data => {
-      // 5
-      if (!data.country) throw new Error('You have exceeded the request limit');
-      // 3
-      console.log(`You are in ${data.city}, ${data.country}`);
-      // 6 & 7
-      getCountryAndNeighbourNew(data.country);
-    }) // 4
-    .catch(err => {
-      renderError(`${err.message} 📛📛📛`);
-    })
-    .finally(() => (countriesContainer.style.opacity = 1));
-};
-
-// whereAmI(52.508, 13.381);
-// whereAmI(19.037, 72.873);
-whereAmI(-33.933, 18.474);
-
+// Promisifying the geolocation  api
 const getPosition = function () {
   return new Promise(function (resolve, reject) {
     navigator.geolocation.getCurrentPosition(resolve, reject);
   });
 };
 
-getPosition.then(res => console.log(res));
+// Get the flag of current location with reverse geocoding
+const whereAmI = function () {
+  // getPosition returns a promise
+  getPosition()
+    .then(res => {
+      const { latitude: lat, longitude: lng } = res.coords;
+      return fetch(`https://geocode.xyz/${lat},${lng}?json=1`);
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (!data.country) throw new Error('You have exceeded the request limit');
+      console.log(`You are in ${data.city}, ${data.country}`);
+      getCountryAndNeighbourNew(data.country);
+    })
+    .catch(err => {
+      renderError(`${err.message} 📛📛📛`);
+    })
+    .finally(() => (countriesContainer.style.opacity = 1));
+};
 
-// Promisifying the geolocation  api
-// btn.addEventListener("click", function () {
-//   whereAmI();
-// });
+btn.addEventListener('click', function () {
+  whereAmI();
+});
