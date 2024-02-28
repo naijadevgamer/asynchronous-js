@@ -156,4 +156,20 @@ const whereAmIAsync = async function () {
   }
 };
 
-whereAmIAsync();
+// whereAmIAsync();
+
+// Running Promises in parallel
+const get3Countries = async function (c1, c2, c3) {
+  try {
+    const data = await Promise.all([
+      getJSON(`https://restcountries.com/v3.1/name/${c1}`),
+      getJSON(`https://restcountries.com/v3.1/name/${c2}`),
+      getJSON(`https://restcountries.com/v3.1/name/${c3}`),
+    ]);
+    console.log(data.map(([d]) => d.capital[0]));
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
+get3Countries('nigeria', 'togo', 'usa');
