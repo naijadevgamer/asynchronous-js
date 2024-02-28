@@ -34,7 +34,7 @@ const renderCountry = function (data, className = '') {
 
 const renderError = function (msg) {
   countriesContainer.insertAdjacentText('beforeend', msg);
-  // countriesContainer.style.opacity = 1;
+  countriesContainer.style.opacity = 1;
 };
 
 // Old school way
@@ -115,6 +115,7 @@ const whereAmI = function () {
   // getPosition returns a promise
   getPosition()
     .then(res => {
+      console.log(res);
       const { latitude: lat, longitude: lng } = res.coords;
       return fetch(`https://geocode.xyz/${lat},${lng}?json=1`);
     })
@@ -133,3 +134,26 @@ const whereAmI = function () {
 btn.addEventListener('click', function () {
   whereAmI();
 });
+
+// Recreate whereAmI Using AsyncAwait to consume promises instead of the then method to make it look more elegant
+const whereAmIAsync = async function () {
+  try {
+    // Geolocation
+    const pos = await getPosition();
+    console.log(pos);
+    const { latitude: lat, longitude: lng } = pos.coords;
+
+    // Reverse geocoding
+    const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?json=1`);
+    console.log(resGeo);
+    const data = await resGeo.json();
+    if (!data.country) throw new Error('You have exceeded the request limit');
+    console.log(`You are in ${data.city}, ${data.country}`);
+    getCountryAndNeighbourNew(data.country);
+  } catch (err) {
+    console.error(err.message);
+    renderError(err.message);
+  }
+};
+
+whereAmIAsync();
